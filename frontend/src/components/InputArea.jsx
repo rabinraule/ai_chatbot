@@ -37,10 +37,23 @@ function InputArea({
         }),
       });
 
-      const data = await response.json();
+      const responseText = await response.text();
+      let data = {};
+
+      if (responseText) {
+        try {
+          data = JSON.parse(responseText);
+        } catch {
+          throw new Error(
+            `Backend returned a non-JSON response with status ${response.status}.`
+          );
+        }
+      }
 
       if (!response.ok) {
-        throw new Error(data.detail || "Backend returned an error.");
+        throw new Error(
+          data.detail || `Backend returned status ${response.status}.`
+        );
       }
 
       setMessages((prev) => [
